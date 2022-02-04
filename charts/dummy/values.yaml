@@ -1,0 +1,54 @@
+##============================================================================= 
+## Common Parameters
+##=============================================================================
+
+## String to partially override common.names.fullname template (will maintain the release name)
+nameOverride: ""
+
+## String to fully override common.names.fullname template with a string
+fullnameOverride: ""
+
+## Annotations to add to all deployed objects
+commonAnnotations: {}
+
+## Labels to add to all deployed objects
+commonLabels: {}
+
+##============================================================================= 
+## Extra ressource parameters
+##=============================================================================
+
+## Array of extra objects to deploy with the release (evaluated as a template).
+extraResources: []
+#- | # e
+#    apiVersion: v1
+#    kind: ConfigMap
+#    metadata:
+#      name: {{ include "helper.fullname" . }}
+#    data:
+#      test: "true"
+
+extraConfigMaps: {}
+#  main:
+#    key: value
+#    key2: value2
+
+
+extraSecrets: {}
+#  main:
+#    key: value
+#    key2: value2
+
+##============================================================================= 
+## Ressource specific parameters
+##=============================================================================
+
+#---{ Common serviceAccount }--------------------
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
