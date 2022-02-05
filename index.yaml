@@ -10,4 +10,15 @@ entries:
     urls:
     - https://github.com/InfraBuilder/helm-experimental/releases/download/dummy-1.0.0/dummy-1.0.0.tgz
     version: 1.0.0
+  mailhog:
+  - apiVersion: v2
+    appVersion: v1.0.1
+    created: "2022-02-05T00:21:22.355665271Z"
+    description: MailHog is an email testing tool for developers
+    digest: c7c8783caf45d4922dded60f115bb92063619f1f851c6329c5ed75565a879300
+    name: mailhog
+    type: application
+    urls:
+    - https://github.com/InfraBuilder/helm-experimental/releases/download/mailhog-0.0.1/mailhog-0.0.1.tgz
+    version: 0.0.1
 generated: "2022-02-04T22:51:21.408348058Z"
