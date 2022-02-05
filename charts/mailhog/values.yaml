@@ -1,0 +1,204 @@
+##============================================================================= 
+## Common Parameters
+##=============================================================================
+
+## String to partially override common.names.fullname template (will maintain the release name)
+nameOverride: ""
+
+## String to fully override common.names.fullname template with a string
+fullnameOverride: ""
+
+## Annotations to add to all deployed objects
+commonAnnotations: {}
+
+## Labels to add to all deployed objects
+commonLabels: {}
+
+##============================================================================= 
+## Extra ressource parameters
+##=============================================================================
+
+## Array of extra objects to deploy with the release (evaluated as a template).
+extraResources: []
+#- | # e
+#    apiVersion: v1
+#    kind: ConfigMap
+#    metadata:
+#      name: {{ include "helper.fullname" . }}
+#    data:
+#      test: "true"
+
+extraConfigMaps: {}
+#  main:
+#    key: value
+#    key2: value2
+
+
+extraSecrets: {}
+#  main:
+#    key: value
+#    key2: value2
+
+##============================================================================= 
+## Ressource specific parameters
+##=============================================================================
+
+config:
+  # Hostname to use for EHLO/HELO and message IDs
+  MH_HOSTNAME: "mailhog.example"
+
+  # Interface and port for SMTP server to bind to
+  MH_SMTP_BIND_ADDR: "0.0.0.0:1025"
+  # Interface and port for HTTP API server to bind to
+  MH_API_BIND_ADDR: "0.0.0.0:8025"
+  # Interface and port for HTTP UI server to bind to
+  MH_UI_BIND_ADDR: "0.0.0.0:8025"
+
+  # WebPath under which the UI is served (without leading or trailing slashes), e.g. 'mailhog'
+  MH_UI_WEB_PATH: ""
+  # A username:bcryptpw mapping file
+  MH_AUTH_FILE: ""
+  
+  # Set message storage: memory / mongodb / maildir
+  MH_STORAGE: "maildir"
+
+  # Maildir path (for maildir storage backend)
+  MH_MAILDIR_PATH: "/data"
+  
+  # MongoDB host and port
+  MH_MONGO_URI: "127.0.0.1:27017"
+  # MongoDB database name for message storage
+  MH_MONGO_DB: "mailhog"
+  # MongoDB collection name for message storage
+  MH_MONGO_COLLECTION: "messages"
+
+  # JSON file defining outgoing SMTP servers
+  # Note: mechanism can be PLAIN or CRAM-MD5.
+  MH_OUTGOING_SMTP: ""
+  #MH_OUTGOING_SMTP: |
+  #  {
+  #    "server name": {
+  #        "name": "server name",
+  #        "host": "...",
+  #        "port": "587",
+  #        "email": "...",
+  #        "username": "...",
+  #        "password": "...",
+  #        "mechanism": "PLAIN"
+  #    }
+  #  }
+
+  
+#---{ Deployment backend }-----------------------
+mailhog:
+  labels: {}
+  annotations: {}
+  podLabels: {}
+  podAnnotations: {}
+
+  # Maildev pod cannot be scaled more than one pod
+  # Instead of managing replicas, you can enable cron pod or not
+  enabled: true
+
+  updateStrategy:
+    type: Recreate
+
+  initContainers: {}
+  hostAliases: {}
+
+  imagePullSecrets: []
+
+  # Container mailhog
+  mailhog:
+    image:
+      repository: "mailhog/mailhog"
+      tag: "v1.0.1"
+      pullPolicy: IfNotPresent
+    command: []
+    args: []
+    tty: false
+    extraEnvVars: []
+    extraEnvFromVars: []
+    ports:
+    - name: smtp
+      containerPort: 1025
+      protocol: TCP
+    - name: http
+      containerPort: 8025
+      protocol: TCP
+    extraPorts: []
+    securityContext: {}
+      # capabilities:
+      #   drop:
+      #   - ALL
+      # readOnlyRootFilesystem: true
+      # runAsNonRoot: true
+      # runAsUser: 1000
+    livenessProbe: {}
+      # httpGet:
+      #   path: /
+      #   port: http
+    readinessProbe: {}
+      # httpGet:
+      #   path: /
+      #   port: http
+    resources: {} 
+      # limits:
+      #   cpu: 100m
+      #   memory: 128Mi
+      # requests:
+      #   cpu: 100m
+      #   memory: 128Mi  
+    extraVolumeMounts: []
+
+
+  # Sidecars are extra containers that will run in same pod
+  sidecars: []
+  podSecurityContext: {}
+    # fsGroup: 2000
+  schedulerName: ""
+  enableServiceLinks: false
+  runtimeClassName: ""
+  priorityClassName: ""
+  topologySpreadConstraints: []
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  extraVolumes: []
+  # - name: foo
+  #   emptyDir: {}
+
+  service:
+    enabled: true
+    nameOverride: "smtp"
+    type: ClusterIP
+    clusterIP: ""
+    loadBalancerIP: ""
+    ports:
+    - name: http
+      port: 80
+      targetPort: http
+      protocol: TCP
+    - name: smtp
+      port: 25
+      targetPort: smtp
+      protocol: TCP
+    extraPorts: []
+
+  persistence:
+    enabled: true
+    existingClaim: ""
+    accessMode: ReadWriteOnce
+    size: 10Gi
+    storageClass: ""
+    resourcePolicy: "keep"
+
+#---{ Common serviceAccount }--------------------
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""

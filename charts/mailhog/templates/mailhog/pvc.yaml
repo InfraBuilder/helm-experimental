@@ -1,0 +1,35 @@
+{{- $currentName := "mailhog" -}}
+
+{{- $currentValues := get (get .Values $currentName) "persistence" -}}
+{{- if $currentValues.enabled }}
+{{- if not $currentValues.existingClaim }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ include "helper.fullname" . }}-{{ $currentName }}
+  labels:
+    {{- include "helper.labels" . | nindent 4 }}
+    {{- if .Values.commonLabels }}
+    {{- .Values.commonLabels | nindent 4 }}
+    {{- end }}
+    app.kubernetes.io/component: {{ $currentName | quote }}
+  annotations: 
+    {{- if eq $currentValues.resourcePolicy "keep" }}
+    helm.sh/resource-policy: keep
+    {{- end }}
+    {{- with .Values.commonAnnotations }}
+    {{- . | nindent 4 -}}
+    {{- end }}
+spec:
+  accessModes:
+  - {{ $currentValues.accessMode }}
+  resources:
+    requests:
+      storage: {{ $currentValues.size }}
+  {{- with $currentValues.storageClass }}
+  {{- if ne . "-" }}
+  storageClassName: {{ . | quote }}
+  {{- end }}
+  {{- end }}
+{{- end }}
+{{- end }}

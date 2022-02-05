@@ -1,0 +1,13 @@
+{{- $currentName := "mailhog" -}}
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "helper.fullname" $ }}-{{ $currentName }}-env
+  labels:
+    {{- include "helper.labels" $ | nindent 4 }}
+    {{- if $.Values.commonLabels }}
+    {{- $.Values.commonLabels | nindent 4 }}
+    {{- end }}
+data:
+  {{- toYaml .Values.config | nindent 2 }}

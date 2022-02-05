@@ -1,0 +1,6 @@
+apiVersion: v2
+name: mailhog
+description: MailHog is an email testing tool for developers
+type: application
+version: 0.0.1
+appVersion: "v1.0.1"

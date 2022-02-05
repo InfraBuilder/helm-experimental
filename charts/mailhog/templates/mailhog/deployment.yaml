@@ -1,0 +1,158 @@
+{{- $currentName := "mailhog" -}}
+
+{{- $currentValues := get .Values $currentName -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "helper.fullname" . }}-{{ $currentName }}
+  labels:
+    {{- include "helper.labels" . | nindent 4 }}
+    {{- if .Values.commonLabels }}
+    {{- .Values.commonLabels | nindent 4 }}
+    {{- end }}
+    app.kubernetes.io/component: {{ $currentName | quote }}
+  annotations: 
+    {{- with .Values.commonAnnotations }}
+    {{- . | nindent 4 -}}
+    {{- end }}
+spec:
+  replicas: {{ $currentValues.enabled | ternary 1 0 }}
+  selector:
+    matchLabels:
+      {{- include "helper.selectorLabels" . | nindent 6 }}
+      {{- if .Values.commonLabels }}
+      {{- .Values.commonLabels | nindent 6 }}
+      {{- end }}
+      app.kubernetes.io/component: {{ $currentName | quote }}
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/mailhog/configmap.yaml") . | sha256sum }}
+        {{- with $currentValues.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "helper.selectorLabels" . | nindent 8 }}
+        {{- if .Values.commonLabels }}
+        {{- .Values.commonLabels | nindent 8 }}
+        {{- end }}
+        app.kubernetes.io/component: {{ $currentName | quote }}
+    spec:
+      {{- with $currentValues.initContainers }}
+      initContainers: {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $currentValues.hostAliases }}
+      hostAliases: {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $currentValues.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.serviceAccount.create }}
+      serviceAccountName: {{ include "helper.serviceAccountName" . }}
+      {{- end }}
+      {{- with $currentValues.schedulerName }}
+      schedulerName: {{ . | quote }} 
+      {{- end }}
+      {{- with $currentValues.runtimeClassName }}
+      runtimeClassName: {{ . | quote }} 
+      {{- end }}
+      {{- with $currentValues.priorityClassName }}
+      priorityClassName: {{ . | quote }} 
+      {{- end }}
+      {{- with $currentValues.topologySpreadConstraints }}
+      topologySpreadConstraints:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $currentValues.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $currentValues.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $currentValues.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $currentValues.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      enableServiceLinks: {{ $currentValues.enableServiceLinks | toYaml -}}
+      {{/*==[ CONTAINERS ]================================*/}}
+      containers:
+      {{/* start new container */}}
+      {{- $currentContainerName := "mailhog" -}}
+      {{- $currentContainerValues := get $currentValues $currentContainerName -}}
+      - name: {{ $currentContainerName }}
+        image: "{{ $currentContainerValues.image.repository }}:{{ $currentContainerValues.image.tag | default "latest" }}"
+        imagePullPolicy: {{ $currentContainerValues.image.pullPolicy }}
+        {{- with $currentContainerValues.command }}
+        command:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- with $currentContainerValues.args }}
+        args:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- if $currentContainerValues.tty }}
+        tty: true
+        {{- end }}
+        env:
+        {{- with $currentContainerValues.extraEnvVars }}
+        {{- toYaml . | nindent 10 }}
+        {{- end }}
+        envFrom:
+        - configMapRef:
+            name: {{ include "helper.fullname" $ }}-{{ $currentName }}-env
+        {{- with $currentContainerValues.extraEnvFromVars }}
+        {{- toYaml . | nindent 10 }}
+        {{- end }}
+        ports:
+        {{- with $currentContainerValues.ports }}
+        {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- with $currentContainerValues.extraPorts }}
+        {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- with $currentContainerValues.securityContext }}
+        securityContext:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- with $currentContainerValues.livenessProbe }}
+        livenessProbe:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- with $currentContainerValues.readinessProbe }}
+        readinessProbe:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- with $currentContainerValues.resources }}
+        resources:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        volumeMounts:
+        - name: data
+          mountPath: /data
+          subPath: data
+        {{ with $currentContainerValues.extraVolumeMounts }}
+          {{- toYaml . | nindent 10 }}
+        {{- end -}}
+      {{/* end container */}}
+      {{- with $currentValues.sidecars }}
+        {{- toYaml . | nindent 6 }}
+      {{- end }}
+      volumes:
+      - name: data
+      {{- if $currentValues.persistence.enabled }}
+        persistentVolumeClaim:
+          claimName: {{ default (printf "%s-%s" (include "helper.fullname" .) $currentName ) $currentValues.persistence.existingClaim }}
+      {{- else }}
+        emptyDir: {}
+      {{- end }}
+      {{- with $currentValues.extraVolumes }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      

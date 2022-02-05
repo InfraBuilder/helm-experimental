@@ -1,0 +1,14 @@
+{{- range $currentName, $v := .Values.extraConfigMaps }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "helper.fullname" $ }}-{{ $currentName }}
+  labels:
+    {{- include "helper.labels" $ | nindent 4 }}
+    {{- if $.Values.commonLabels }}
+    {{- $.Values.commonLabels | nindent 4 }}
+    {{- end }}
+data:
+  {{- toYaml $v | nindent 2 }}
+{{- end -}}

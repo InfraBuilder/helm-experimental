@@ -1,0 +1,44 @@
+{{/* Service */}}
+{{- $currentName := "mailhog" -}}
+
+{{- $currentValues := get (get .Values $currentName) "service" -}}
+{{- if $currentValues.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $currentValues.nameOverride | default (printf "%s-%s" (include "helper.fullname" .) $currentName) }}
+  labels:
+    {{- include "helper.labels" . | nindent 4 }}
+    {{- if .Values.commonLabels }}
+    {{- .Values.commonLabels | nindent 4 }}
+    {{- end }}
+    app.kubernetes.io/component: {{ $currentName | quote }}
+  annotations: 
+    {{- with .Values.commonAnnotations }}
+    {{- toYaml . | nindent 4 -}}
+    {{- end }}
+    {{- with $currentValues.annotations }}
+    {{- toYaml . | nindent 4 -}}
+    {{- end }}
+spec:
+  type: {{ $currentValues.type }}
+  {{- with $currentValues.clusterIP }}
+  {{- toYaml . | nindent 2 -}}
+  {{- end }}
+  {{- with $currentValues.loadBalancerIP }}
+  {{- toYaml . | nindent 2 -}}
+  {{- end }}
+  ports:
+  {{- with $currentValues.ports }}
+  {{- toYaml . | nindent 2 -}}
+  {{- end }}
+  {{- with $currentValues.extraPorts }}
+  {{- toYaml . | nindent 2 -}}
+  {{- end }}
+  selector:
+    {{- include "helper.selectorLabels" . | nindent 4 }}
+    {{- if .Values.commonLabels }}
+    {{- .Values.commonLabels | nindent 4 }}
+    {{- end }}
+    app.kubernetes.io/component: {{ $currentName | quote }}
+{{- end }}
