@@ -42,69 +42,69 @@ extraSecrets: {}
 ##============================================================================= 
 ## Ressource specific parameters
 ##=============================================================================
-
-config:
-  # Hostname to use for EHLO/HELO and message IDs
-  MH_HOSTNAME: "mailhog.example"
-
-  # Interface and port for SMTP server to bind to
-  MH_SMTP_BIND_ADDR: "0.0.0.0:1025"
-  # Interface and port for HTTP API server to bind to
-  MH_API_BIND_ADDR: "0.0.0.0:8025"
-  # Interface and port for HTTP UI server to bind to
-  MH_UI_BIND_ADDR: "0.0.0.0:8025"
-
-  # WebPath under which the UI is served (without leading or trailing slashes), e.g. 'mailhog'
-  MH_UI_WEB_PATH: ""
-  # A username:bcryptpw mapping file
-  MH_AUTH_FILE: ""
-  
-  # Set message storage: memory / mongodb / maildir
-  MH_STORAGE: "maildir"
-
-  # Maildir path (for maildir storage backend)
-  MH_MAILDIR_PATH: "/data"
-  
-  # MongoDB host and port
-  MH_MONGO_URI: "127.0.0.1:27017"
-  # MongoDB database name for message storage
-  MH_MONGO_DB: "mailhog"
-  # MongoDB collection name for message storage
-  MH_MONGO_COLLECTION: "messages"
-
-  # JSON file defining outgoing SMTP servers
-  # Note: mechanism can be PLAIN or CRAM-MD5.
-  MH_OUTGOING_SMTP: ""
-  #MH_OUTGOING_SMTP: |
-  #  {
-  #    "server name": {
-  #        "name": "server name",
-  #        "host": "...",
-  #        "port": "587",
-  #        "email": "...",
-  #        "username": "...",
-  #        "password": "...",
-  #        "mechanism": "PLAIN"
-  #    }
-  #  }
-
   
 #---{ Deployment backend }-----------------------
 mailhog:
+  config:
+    smtp:
+      # Hostname to use for EHLO/HELO and message IDs
+      hostname: "mailhog.example"
+
+    http:
+      # URI under which the UI is served, e.g. 'mailhog'
+      uri: ""
+
+      # Add a user to enable HTTP Basic authentication
+      # each user can be defined as user+clearPassword 
+      # or directly a line in htpasswd format
+      # Advice : Prefer htpasswd format when possible
+      authUsers: []
+      #- htpasswd: "test:$2a$04$qxRo.ftFoNep7ld/5jfKtuBTnGqff/fZVyj53mUC5sVf9dtDLAi/S"
+      #- user: myuser
+      #  clearPassword: "Ch4ngeM3!"
+
+    # Relay section contains one or more smtp relay servers 
+    relay: {}
+    #  # Server identifier
+    #  myserver: 
+    #    # [mandatory] Common server name 
+    #    name: "My Server"
+    #    # [mandatory] SMTP Relay host
+    #    host: "smtp.example.com"
+    #    # [mandatory] SMTP Relay port
+    #    port: "587"
+    #    # [optionnal] Envelope From email
+    #    email: "test@example.com"
+    #    # [optionnal] Authentication mecanism (PLAIN or CRAM-MD5)
+    #    mechanism: "PLAIN"
+    #    # [optionnal] Authentication username
+    #    username: "myusername"
+    #    # [optionnal] Authentication password
+    #    password: "Ch4ngeM3!"
+
+  # Deployment extra labels
   labels: {}
+  # Deployment extra annotations
   annotations: {}
+
+  # Pod extra labels
   podLabels: {}
+  # Pod extra annotations
   podAnnotations: {}
 
-  # Maildev pod cannot be scaled more than one pod
-  # Instead of managing replicas, you can enable cron pod or not
+  # MailHog pod cannot be scaled more than one pod
+  # Instead of managing replicas, you can enable MailHog pod or not
+  # If enabled is set to false, it would mean 0 replicas
   enabled: true
 
   updateStrategy:
     type: Recreate
 
-  initContainers: {}
-  hostAliases: {}
+  # extra initContainers contains a list of Containers
+  # https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#Container
+  initContainers: []
+
+  hostAliases: []
 
   imagePullSecrets: []
 

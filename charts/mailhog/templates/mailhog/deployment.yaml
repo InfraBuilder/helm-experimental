@@ -137,9 +137,19 @@ spec:
         - name: data
           mountPath: /data
           subPath: data
+        {{- with $currentValues.config.http.authUsers }}
+        - name: configfiles
+          mountPath: /home/mailhog/.htpasswd
+          subPath: .htpasswd
+        {{- end -}}
+        {{- with $currentValues.config.relay }}
+        - name: configfiles
+          mountPath: /home/mailhog/relay.json
+          subPath: relay.json
+        {{- end -}}
         {{ with $currentContainerValues.extraVolumeMounts }}
           {{- toYaml . | nindent 10 }}
-        {{- end -}}
+        {{ end -}}
       {{/* end container */}}
       {{- with $currentValues.sidecars }}
         {{- toYaml . | nindent 6 }}
@@ -148,10 +158,14 @@ spec:
       - name: data
       {{- if $currentValues.persistence.enabled }}
         persistentVolumeClaim:
-          claimName: {{ default (printf "%s-%s" (include "helper.fullname" .) $currentName ) $currentValues.persistence.existingClaim }}
+          claimName: {{ default (printf "%s-%s" (include "helper.fullname" $) $currentName ) $currentValues.persistence.existingClaim }}
       {{- else }}
         emptyDir: {}
       {{- end }}
+      - name: configfiles
+        configMap:
+          name: {{ include "helper.fullname" $ }}-{{ $currentName }}-configfiles
+          defaultMode: 292
       {{- with $currentValues.extraVolumes }}
         {{- toYaml . | nindent 8 }}
       {{- end }}

@@ -1,5 +1,32 @@
 {{- $currentName := "mailhog" -}}
 
+{{- $currentValues := get .Values $currentName -}}
+{{- $currentConfig := get $currentValues "config" -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "helper.fullname" $ }}-{{ $currentName }}-configfiles
+  labels:
+    {{- include "helper.labels" $ | nindent 4 }}
+    {{- if $.Values.commonLabels }}
+    {{- $.Values.commonLabels | nindent 4 }}
+    {{- end }}
+data:
+  {{- with $currentConfig.http.authUsers }}
+  .htpasswd: |
+    {{- range . }}
+    {{- if .htpasswd }}
+    {{ .htpasswd }}
+    {{- else }}
+    {{ htpasswd .user .clearPassword }}
+    {{- end }}
+    {{- end }}
+  {{ end -}}
+  {{- with $currentConfig.relay }}
+  relay.json: |
+    {{ . | toJson }}
+  {{- end }}
+---
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -10,4 +37,38 @@ metadata:
     {{- $.Values.commonLabels | nindent 4 }}
     {{- end }}
 data:
-  {{- toYaml .Values.config | nindent 2 }}
+  # Hostname to use for EHLO/HELO and message IDs
+  MH_HOSTNAME: {{ $currentConfig.smtp.hostname | quote }}
+
+  # Interface and port for SMTP server to bind to
+  MH_SMTP_BIND_ADDR: "0.0.0.0:1025"
+  # Interface and port for HTTP API server to bind to
+  MH_API_BIND_ADDR: "0.0.0.0:8025"
+  # Interface and port for HTTP UI server to bind to
+  MH_UI_BIND_ADDR: "0.0.0.0:8025"
+
+  # WebPath under which the UI is served (without leading or trailing slashes), e.g. 'mailhog'
+  MH_UI_WEB_PATH: {{ $currentConfig.http.uri | trimAll "/" | quote }}
+  {{- with $currentConfig.http.authUsers }}
+  # A username:bcryptpw mapping file
+  MH_AUTH_FILE: "/home/mailhog/.htpasswd"
+  {{ end }}
+
+  # Set message storage: memory / mongodb / maildir
+  MH_STORAGE: "maildir"
+
+  # Maildir path (for maildir storage backend)
+  MH_MAILDIR_PATH: "/data"
+  
+  # MongoDB host and port
+  MH_MONGO_URI: "127.0.0.1:27017"
+  # MongoDB database name for message storage
+  MH_MONGO_DB: "mailhog"
+  # MongoDB collection name for message storage
+  MH_MONGO_COLLECTION: "messages"
+
+  {{- with $currentConfig.relay }}
+  # JSON file defining outgoing SMTP servers
+  # Note: mechanism can be PLAIN or CRAM-MD5.
+  MH_OUTGOING_SMTP: "/home/mailhog/relay.json"
+  {{- end }}
