@@ -170,7 +170,7 @@ mailhog:
 
   service:
     enabled: true
-    nameOverride: "smtp"
+    nameOverride: ""
     type: ClusterIP
     clusterIP: ""
     loadBalancerIP: ""
@@ -179,6 +179,19 @@ mailhog:
       port: 80
       targetPort: http
       protocol: TCP
+    - name: smtp
+      port: 25
+      targetPort: smtp
+      protocol: TCP
+    extraPorts: []
+
+  smtpOnlyService:
+    enabled: false
+    nameOverride: "smtp"
+    type: ClusterIP
+    clusterIP: ""
+    loadBalancerIP: ""
+    ports:
     - name: smtp
       port: 25
       targetPort: smtp
