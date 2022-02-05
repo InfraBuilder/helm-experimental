@@ -1,0 +1,279 @@
+# ##============================================================================= 
+# ## Common Parameters
+# ##=============================================================================
+
+# ## String to partially override common.names.fullname template (will maintain the release name)
+# nameOverride: "customname"
+
+# ## String to fully override common.names.fullname template with a string
+# fullnameOverride: "customfullname"
+
+# ## Annotations to add to all deployed objects
+# commonAnnotations: #{}
+#   mycommonannotation: "global"
+
+# ## Labels to add to all deployed objects
+# commonLabels: #{}
+#   mycommonlabel: "global"
+
+# ##============================================================================= 
+# ## Extra ressource parameters
+# ##=============================================================================
+
+# ## Array of extra objects to deploy with the release (evaluated as a template).
+# extraResources: #[]
+# - |
+#     apiVersion: v1
+#     kind: ConfigMap
+#     metadata:
+#       name: {{ include "helper.fullname" . }}-extra
+#     data:
+#       test: "true"
+
+# extraConfigMaps: #{}
+#   # ConfigMap name
+#   main:
+#     # Data keys
+#     key: value
+#     key2: value2
+
+# extraSecrets: #{}
+#   # ConfigMap name
+#   main:
+#     key: value
+#     key2: value2
+
+# ##============================================================================= 
+# ## Ressource specific parameters
+# ##=============================================================================
+  
+# #---{ Deployment backend }-----------------------
+# mailhog:
+#   config:
+#     smtp:
+#       # Hostname to use for EHLO/HELO and message IDs
+#       hostname: "customhostname"
+
+#     http:
+#       # URI under which the UI is served, e.g. 'mailhog'
+#       uri: "customuri"
+
+#       # Add a user to enable HTTP Basic authentication
+#       # each user can be defined as user+clearPassword 
+#       # or directly a line in htpasswd format
+#       # Advice : Prefer htpasswd format when possible
+#       authUsers: #[]
+#       - htpasswd: "test:$2a$04$qxRo.ftFoNep7ld/5jfKtuBTnGqff/fZVyj53mUC5sVf9dtDLAi/S"
+#       #- user: myuser
+#       #  clearPassword: "Ch4ngeM3!"
+
+#     # Relay section contains one or more smtp relay servers 
+#     relay: #{}
+#       # Server identifier
+#       mycustomserver: 
+#         # [mandatory] Common server name 
+#         name: "Custom Server"
+#         # [mandatory] SMTP Relay host
+#         host: "smtp.customexample.com"
+#         # [mandatory] SMTP Relay port
+#         port: "25"
+#         # [optionnal] Envelope From email
+#         email: "custom@example.com"
+#         # [optionnal] Authentication mecanism (PLAIN or CRAM-MD5)
+#         mechanism: "PLAIN"
+#         # [optionnal] Authentication username
+#         username: "mycustomusername"
+#         # [optionnal] Authentication password
+#         password: "MyPassw0rd"
+
+#   # Deployment extra labels
+#   labels: #{}
+#     deplabel: custom
+
+#   # Deployment extra annotations
+#   annotations: # {}
+#     depannotation: custom
+#   # Pod extra labels
+#   podLabels: #{}
+#     podlabel: custom
+#   # Pod extra annotations
+#   podAnnotations: #{}
+#     podannotation: custom
+
+#   # MailHog pod cannot be scaled more than one pod
+#   # Instead of managing replicas, you can enable MailHog pod or not
+#   # If enabled is set to false, it would mean 0 replicas
+#   enabled: false
+
+#   updateStrategy:
+#     type: RollingUpdate
+
+#   # extra initContainers contains a list of Containers
+#   # https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#Container
+#   initContainers: #[]
+#   - name: myinit
+#     image: busybox
+#     args: ["date"]
+
+#   hostAliases: #[]
+#   - ip: "127.0.0.1"
+#     hostnames:
+#     - "foo.local"
+#     - "bar.local"
+
+#   imagePullSecrets: #[]
+#   - name: imgpullscrt
+
+#   # Container mailhog
+#   mailhog:
+#     image:
+#       repository: "custommailhog/mailhog"
+#       tag: "v1.0.1-custom"
+#       pullPolicy: Always
+#     command: #[]
+#     - sh
+#     args: #[]
+#     - MailHog
+#     tty: true
+#     extraEnvVars: #[]
+#     - name: CUSTOMENV
+#       value: custom
+#     extraEnvFromVars: #[]
+#     - configMapRef:
+#         name: main
+#     ports:
+#     - name: custsmtp
+#       containerPort: 9925
+#       protocol: TCP
+#     - name: custhttp
+#       containerPort: 9980
+#       protocol: TCP
+#     extraPorts: #[]
+#     - name: extrasmtp
+#       containerPort: 7725
+#       protocol: TCP
+#     - name: extrahttp
+#       containerPort: 7780
+#       protocol: TCP
+#     securityContext: #{}
+#       capabilities:
+#         drop:
+#         - ALL
+#       readOnlyRootFilesystem: true
+#       runAsNonRoot: true
+#       runAsUser: 1000
+#     livenessProbe: #{}
+#       httpGet:
+#         path: /custliveness
+#         port: custhttp
+#     readinessProbe: #{}
+#       httpGet:
+#         path: /custreadiness
+#         port: extrahttp
+#     resources: #{} 
+#       limits:
+#         cpu: 100m
+#         memory: 128Mi
+#       requests:
+#         cpu: 100m
+#         memory: 128Mi  
+#     extraVolumeMounts: #[]
+#     - name: foo
+#       mountPath: /extratest
+
+
+#   # Sidecars are extra containers that will run in same pod
+#   sidecars: #[]
+#   - name: nginx
+#     image: nginx:1-alpine
+
+#   podSecurityContext: #{}
+#     fsGroup: 1999
+#   schedulerName: "customsched"
+#   enableServiceLinks: true
+#   runtimeClassName: "custrunclass"
+#   priorityClassName: "custprio"
+#   topologySpreadConstraints: #[]
+#   - maxSkew: 1
+#     topologyKey: 2
+#     whenUnsatisfiable: 3
+#     labelSelector:
+#       matchLabels:
+#         test: ok
+#   nodeSelector: # {}
+#     disk: ssd
+#   tolerations: #[]
+#   - key: "key1"
+#     operator: "Equal"
+#     value: "value1"
+#     effect: "NoSchedule"
+#   affinity: #{}
+#     nodeAffinity:
+#       requiredDuringSchedulingIgnoredDuringExecution:
+#         nodeSelectorTerms:
+#         - matchExpressions:
+#           - key: kubernetes.io/e2e-az-name
+#             operator: In
+#             values:
+#             - e2e-az1
+#             - e2e-az2
+#   extraVolumes: #[]
+#   - name: foo
+#     emptyDir: {}
+
+#   service:
+#     enabled: true
+#     nameOverride: "mysvc"
+#     type: NodePort
+#     clusterIP: "10.43.111.111"
+#     loadBalancerIP: "3.4.5.6"
+#     ports:
+#     - name: svchttp
+#       port: 6680
+#       targetPort: custhttp
+#       protocol: TCP
+#     - name: svcsmtp
+#       port: 6625
+#       targetPort: custsmtp
+#       protocol: TCP
+#     extraPorts: #[]
+#     - name: extraport
+#       port: 5555
+#       targetPort: extrahttp
+#       protocol: TCP
+
+#   smtpOnlyService:
+#     enabled: true
+#     nameOverride: "smtpbis"
+#     type: LoadBalancer
+#     clusterIP: "10.43.111.112"
+#     loadBalancerIP: "10.7.1.179"
+#     ports:
+#     - name: svconlysmtp
+#       port: 4425
+#       targetPort: smtp
+#       protocol: TCP
+#     extraPorts: #[]
+#     - name: extraportsmtp
+#       port: 3355
+#       targetPort: extrasmtp
+#       protocol: TCP
+
+#   persistence:
+#     enabled: true
+#     #existingClaim: "custompvc"
+#     accessMode: ReadWriteMany
+#     size: 99Gi
+#     storageClass: "mysc"
+#     resourcePolicyKeep: false
+
+# # #---{ Common serviceAccount }--------------------
+# serviceAccount:
+#   # Specifies whether a service account should be created
+#   create: true
+#   # Annotations to add to the service account
+#   annotations: #{}
+#     sa-annotation: custom
+#   # The name of the service account to use.
+#   # If not set and create is true, a name is generated using the fullname template
+#   name: "custom-sa"

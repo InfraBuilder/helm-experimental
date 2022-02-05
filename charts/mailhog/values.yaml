@@ -10,9 +10,11 @@ fullnameOverride: ""
 
 ## Annotations to add to all deployed objects
 commonAnnotations: {}
+#   mycommonannotation: "global"
 
 ## Labels to add to all deployed objects
 commonLabels: {}
+#   mycommonlabel: "global"
 
 ##============================================================================= 
 ## Extra ressource parameters
@@ -20,7 +22,7 @@ commonLabels: {}
 
 ## Array of extra objects to deploy with the release (evaluated as a template).
 extraResources: []
-#- | # e
+#- |
 #    apiVersion: v1
 #    kind: ConfigMap
 #    metadata:
@@ -29,13 +31,16 @@ extraResources: []
 #      test: "true"
 
 extraConfigMaps: {}
+#  # ConfigMap name
 #  main:
+#    # Data keys
 #    key: value
 #    key2: value2
 
-
 extraSecrets: {}
+#  # Secret name
 #  main:
+#    # Data keys
 #    key: value
 #    key2: value2
 
@@ -103,10 +108,18 @@ mailhog:
   # extra initContainers contains a list of Containers
   # https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#Container
   initContainers: []
+  # - name: myinit
+  #   image: busybox
+  #   args: ["date"]
 
   hostAliases: []
+  # - ip: "127.0.0.1"
+  #   hostnames:
+  #   - "foo.local"
+  #   - "bar.local"
 
   imagePullSecrets: []
+  # - name: secretName
 
   # Container mailhog
   mailhog:
@@ -162,7 +175,12 @@ mailhog:
   priorityClassName: ""
   topologySpreadConstraints: []
   nodeSelector: {}
+  # key: value
   tolerations: []
+  # - key: "key1"
+  #   operator: "Equal"
+  #   value: "value1"
+  #   effect: "NoSchedule"
   affinity: {}
   extraVolumes: []
   # - name: foo
@@ -199,12 +217,16 @@ mailhog:
     extraPorts: []
 
   persistence:
+    # Enable persistence with PVC
     enabled: true
     existingClaim: ""
+    # If not using existingClaim, 
+    # will create PVC with following parameters
     accessMode: ReadWriteOnce
     size: 10Gi
     storageClass: ""
-    resourcePolicy: "keep"
+    # If resourcePolicyKeep is true, helm will not delete PVC on release uninstall
+    resourcePolicyKeep: true
 
 #---{ Common serviceAccount }--------------------
 serviceAccount:

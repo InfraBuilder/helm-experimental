@@ -8,8 +8,12 @@ metadata:
   name: {{ include "helper.fullname" $ }}-{{ $currentName }}-configfiles
   labels:
     {{- include "helper.labels" $ | nindent 4 }}
-    {{- if $.Values.commonLabels }}
-    {{- $.Values.commonLabels | nindent 4 }}
+    {{- with .Values.commonLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  annotations:
+    {{- with .Values.commonAnnotations }}
+    {{- toYaml . | nindent 4 }}
     {{- end }}
 data:
   {{- with $currentConfig.http.authUsers }}
@@ -21,7 +25,7 @@ data:
     {{ htpasswd .user .clearPassword }}
     {{- end }}
     {{- end }}
-  {{ end -}}
+  {{- end }}
   {{- with $currentConfig.relay }}
   relay.json: |
     {{ . | toJson }}
@@ -33,8 +37,12 @@ metadata:
   name: {{ include "helper.fullname" $ }}-{{ $currentName }}-env
   labels:
     {{- include "helper.labels" $ | nindent 4 }}
-    {{- if $.Values.commonLabels }}
-    {{- $.Values.commonLabels | nindent 4 }}
+    {{- with .Values.commonLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  annotations:
+    {{- with .Values.commonAnnotations }}
+    {{- toYaml . | nindent 4 }}
     {{- end }}
 data:
   # Hostname to use for EHLO/HELO and message IDs

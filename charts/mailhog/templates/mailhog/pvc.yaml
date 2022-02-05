@@ -9,16 +9,16 @@ metadata:
   name: {{ include "helper.fullname" . }}-{{ $currentName }}
   labels:
     {{- include "helper.labels" . | nindent 4 }}
-    {{- if .Values.commonLabels }}
-    {{- .Values.commonLabels | nindent 4 }}
+    {{- with .Values.commonLabels }}
+    {{- toYaml . | nindent 4 }}
     {{- end }}
     app.kubernetes.io/component: {{ $currentName | quote }}
   annotations: 
-    {{- if eq $currentValues.resourcePolicy "keep" }}
+    {{- if $currentValues.resourcePolicyKeep }}
     helm.sh/resource-policy: keep
     {{- end }}
     {{- with .Values.commonAnnotations }}
-    {{- . | nindent 4 -}}
+    {{- toYaml . | nindent 4 }}
     {{- end }}
 spec:
   accessModes:
