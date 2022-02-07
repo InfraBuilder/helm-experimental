@@ -259,6 +259,20 @@
 #       targetPort: extrasmtp
 #       protocol: TCP
 
+#  ingress:
+#    enabled: true
+#    className: "myclass"
+#    annotations: # {}
+#      kubernetes.io/ingress.class: nginx
+#      cert-manager.io/cluster-issuer: "letsencrypt"
+#    hosts:
+#    - custom.tld
+#    paths: 
+#    - /mailhog/
+#    pathType: ImplementationSpecific
+#    tls: true
+#    secretName: "cust-tls"
+
 #   persistence:
 #     enabled: true
 #     #existingClaim: "custompvc"

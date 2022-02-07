@@ -216,6 +216,20 @@ mailhog:
       protocol: TCP
     extraPorts: []
 
+  ingress:
+    enabled: false
+    className: ""
+    annotations: {}
+      # kubernetes.io/ingress.class: nginx
+      # cert-manager.io/cluster-issuer: "letsencrypt"
+    hosts:
+    - example.com
+    paths: 
+    - /
+    pathType: Prefix
+    tls: false
+    secretName: ""
+
   persistence:
     # Enable persistence with PVC
     enabled: true
