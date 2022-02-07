@@ -13,6 +13,16 @@ entries:
   mailhog:
   - apiVersion: v2
     appVersion: v1.0.1
+    created: "2022-02-07T01:34:53.575878046Z"
+    description: MailHog is an email testing tool for developers
+    digest: e0de24bd52bf7f023867834e32c2b5f36300b4620be72c2605d147476cde46f7
+    name: mailhog
+    type: application
+    urls:
+    - https://github.com/InfraBuilder/helm-experimental/releases/download/mailhog-0.2.1/mailhog-0.2.1.tgz
+    version: 0.2.1
+  - apiVersion: v2
+    appVersion: v1.0.1
     created: "2022-02-05T19:44:39.451898026Z"
     description: MailHog is an email testing tool for developers
     digest: 1450b197449e00472ad2fb5915ac704fc181cb6fd7d55efaf8eabd8af774e8c2
