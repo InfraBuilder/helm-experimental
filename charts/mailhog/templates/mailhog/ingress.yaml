@@ -37,6 +37,9 @@ metadata:
     {{- with $currentValues.annotations }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
+    {{- with $currentIngress.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
 spec:
   {{- if and $currentIngress.className (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
   ingressClassName: {{ $currentIngress.className }}
