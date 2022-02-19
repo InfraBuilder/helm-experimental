@@ -1,0 +1,20 @@
+## String to partially override common.names.fullname template (will maintain the release name)
+nameOverride: ""
+## String to fully override common.names.fullname template with a string
+fullnameOverride: ""
+
+# PVC annotations
+annotations: {}
+
+# PVC labels
+labels: {}
+
+# PVC Size
+size: 10Gi
+# Access mode can be "rwo", "rwx", "ReadWriteOnce", "ReadOnlyMany", or "ReadWriteMany"
+accessMode: ReadWriteOnce
+# StorageClass name ("-" means default storageclass)
+storageClass: "-"
+
+# Should helm keep PVC on release deletion ?
+keepPvcOnReleaseDelete: false

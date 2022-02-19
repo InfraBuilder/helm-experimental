@@ -1,0 +1,18 @@
+# ## String to partially override common.names.fullname template (will maintain the release name)
+# nameOverride: "pvc"
+# ## String to fully override common.names.fullname template with a string
+# fullnameOverride: "mypvc"
+
+# # PVC annotations
+# annotations: 
+#   myanno: tation
+
+# # PVC labels
+# labels:
+#  mylab: el
+
+# size: 35Gi
+# accessMode: rwx
+# storageClass: "ceph-block-rwo"
+
+# resourcePolicyKeep: true

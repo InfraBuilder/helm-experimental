@@ -1,0 +1,14 @@
+{{- $currentValues := .Values -}}
+
+Thank you for installing chart {{ .Chart.Name | quote }}.
+Your release is named {{ .Release.Name | quote }}.
+
+How to retrieve status of PersistentVolumeClaim {{ include "helper.fullname" . }}
+```
+kubectl get -n {{ .Release.Namespace }} pvc {{ include "helper.fullname" . }}
+```
+
+Size : {{ $currentValues.size }}
+AccessMode: {{ $currentValues.accessMode }}
+
+If you delete this release, the pvc will be : {{ ternary "keeped" "deleted" $currentValues.keepPvcOnReleaseDelete }}

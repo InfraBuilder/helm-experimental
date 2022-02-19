@@ -1,0 +1,33 @@
+{{- $currentValues := .Values  -}}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ include "helper.fullname" . }}
+  labels:
+    {{- include "helper.labels" . | nindent 4 }}
+    {{- with $currentValues.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  annotations: 
+    {{- if $currentValues.keepPvcOnReleaseDelete }}
+    helm.sh/resource-policy: keep
+    {{- end }}
+    {{- with $currentValues.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  accessModes:
+  {{- $modes := dict "rwo" "ReadWriteOnce" "rwx" "ReadWriteMany" }}
+  {{- if hasKey $modes (lower $currentValues.accessMode) }}
+  - {{ get $modes (lower $currentValues.accessMode) }}
+  {{- else }}
+  - {{ $currentValues.accessMode }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ $currentValues.size }}
+  {{- with $currentValues.storageClass }}
+  {{- if ne . "-" }}
+  storageClassName: {{ . | quote }}
+  {{- end }}
+  {{- end }}
