@@ -1,0 +1,5 @@
+apiVersion: v2
+name: easy-ingress
+description: Easy Ingress is just an opinionated Ingress Resource Wizard
+type: application
+version: 0.0.1

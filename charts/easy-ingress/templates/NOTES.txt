@@ -1,0 +1,29 @@
+{{- $currentValues := .Values -}}
+
+Thank you for installing chart {{ .Chart.Name | quote }}.
+Your release is named {{ .Release.Name | quote }}.
+
+How to retrieve status of ingress {{ include "helper.fullname" . }}
+```
+kubectl get -n {{ .Release.Namespace }} ingress {{ include "helper.fullname" . }}
+```
+
+TLS : {{ ternary "Yes" "No" $currentValues.tls.enabled }}
+{{- if $currentValues.tls.enabled }}
+{{- if $currentValues.tls.certManager.clusterIssuer }}
+Cert-manager cluster-issuer: {{ $currentValues.tls.certManager.clusterIssuer | quote }}
+{{- else if $currentValues.tls.certManager.issuer }}
+Cert-manager issuer: {{ $currentValues.tls.certManager.issuer | quote }}
+{{- end }}
+Secret: {{ default (print ( include "helper.fullname" . ) "-tls") $currentValues.tls.secretName | quote }}
+{{- end }}
+
+HTTP Routing :
+{{- range $host, $urimapping := $currentValues.routing }}
+  {{- range $path, $target := $urimapping }}
+  {{- $parts := split ":" $target }}
+  {{- $service := $parts._0 }}
+  {{- $port := $parts._1 }}
+  {{ printf "%s%s => Service \"%s\" port %s" $host $path $service $port }}
+  {{- end }}
+{{- end }}

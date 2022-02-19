@@ -1,0 +1,36 @@
+## String to partially override common.names.fullname template (will maintain the release name)
+nameOverride: ""
+## String to fully override common.names.fullname template with a string
+fullnameOverride: ""
+
+# Ingress annotations
+annotations: {}
+
+# Ingress labels
+labels: {}
+
+# HTTP Routing
+routing:
+  # Format :
+  #<hostname>:
+  #  <uri>: <service>:<port>
+  #
+  # Example:
+  # host.example.com:
+  #   /: myservice:http
+  #   /api/v1/: myapi:web
+
+tls: 
+  enabled: true
+
+  # Auto-generated secret name if empty
+  secretName: ""
+  
+  # Enable cert-manager annotations
+  certManager:
+    # clusterIssuer and issuer are mutually exclusive
+    clusterIssuer: "letsencrypt"
+    issuer: ""
+
+# IngressClass name
+className: "nginx"

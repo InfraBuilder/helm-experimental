@@ -1,0 +1,35 @@
+# ## String to partially override common.names.fullname template (will maintain the release name)
+# nameOverride: "ing"
+# ## String to fully override common.names.fullname template with a string
+# fullnameOverride: "myingress"
+
+# # Ingress annotations
+# annotations:
+#   myanno: tation
+
+# # Ingress labels
+# labels: 
+#   mylab: el
+
+# # HTTP Routing
+# routing:
+#   mytest.tld:
+#     /foo: svcfoo:fooport
+#     /bar: bar-svc:8080
+#   mybaz.com:
+#     /: baz:http
+
+# tls: 
+#   enabled: false
+
+#   # Auto-generated secret name if empty
+#   secretName: "bob"
+  
+#   # Enable cert-manager annotations
+#   certManager:
+#     # clusterIssuer and issuer are mutually exclusive
+#     clusterIssuer: ""
+#     issuer: "le-dns"
+
+# # IngressClass name
+# className: "toto"

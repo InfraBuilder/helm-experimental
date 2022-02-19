@@ -1,0 +1,74 @@
+{{- $currentValues := .Values -}}
+
+{{- /* Add ingressClass as annotation if K8S < 1.18 */ -}}
+{{- if and $currentValues.className (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
+  {{- if not (hasKey $currentValues.annotations "kubernetes.io/ingress.class") }}
+  {{- $_ := set $currentValues.annotations "kubernetes.io/ingress.class" .Values.ingress.className}}
+  {{- end }}
+{{- end }}
+
+{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: networking.k8s.io/v1
+{{- else if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: networking.k8s.io/v1beta1
+{{- else -}}
+apiVersion: extensions/v1beta1
+{{- end }}
+kind: Ingress
+metadata:
+  name: {{ include "helper.fullname" . }}
+  labels:
+    {{- include "helper.labels" . | nindent 4 }}
+    {{- with $currentValues.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  annotations:
+    {{- if $currentValues.tls.certManager.clusterIssuer }}
+    cert-manager.io/cluster-issuer: {{ $currentValues.tls.certManager.clusterIssuer | quote }}
+    {{- else if $currentValues.tls.certManager.issuer }}
+    cert-manager.io/issuer: {{ $currentValues.tls.certManager.issuer | quote }}
+    {{- end }}
+    {{- with $currentValues.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  {{- if and $currentValues.className (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
+  ingressClassName: {{ $currentValues.className }}
+  {{- end }}
+  rules:
+    {{- range $host, $urimapping := $currentValues.routing }}
+    - host: {{ $host | quote }}
+      http:
+        paths:
+        {{- range $path, $target := $urimapping }}
+        - path: {{ $path | quote }}
+          {{- if semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion }}
+          pathType: Prefix
+          {{- end }}
+          backend:
+            {{- $parts := split ":" $target -}}
+            {{- $service := $parts._0 -}}
+            {{- $port := $parts._1 -}}
+            {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+            service:
+              name: {{ $service | quote }}
+              port:
+                {{- if regexMatch "^[0-9]+$" $port }}
+                number: {{ $port }}
+                {{- else }}                
+                name: {{ $port | quote }}
+                {{- end }}
+            {{- else }}
+            serviceName: {{ $service | quote }}
+            servicePort: {{ $port }}
+            {{- end }}
+        {{- end }}
+    {{- end }}
+  {{- if $currentValues.tls.enabled }}
+  tls:
+    - hosts:
+      {{- range $host, $urimapping := $currentValues.routing }}
+      - {{ $host | quote }}
+      {{- end }}
+      secretName: {{ default (print ( include "helper.fullname" . ) "-tls") $currentValues.tls.secretName | quote }}
+  {{- end }}
