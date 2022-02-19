@@ -10,6 +10,16 @@ entries:
     urls:
     - https://github.com/InfraBuilder/helm-experimental/releases/download/dummy-1.0.0/dummy-1.0.0.tgz
     version: 1.0.0
+  easy-ingress:
+  - apiVersion: v2
+    created: "2022-02-19T02:11:05.068903565Z"
+    description: Easy Ingress is just an opinionated Ingress Resource Wizard
+    digest: 9ea85232f8b3bcbe65f1637490d82270aebcd7d57e85f114ebbeaa4beb134a65
+    name: easy-ingress
+    type: application
+    urls:
+    - https://github.com/InfraBuilder/helm-experimental/releases/download/easy-ingress-0.0.1/easy-ingress-0.0.1.tgz
+    version: 0.0.1
   mailhog:
   - apiVersion: v2
     appVersion: v1.0.1
