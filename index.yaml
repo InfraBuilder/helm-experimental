@@ -3,6 +3,19 @@ entries:
   adminer:
   - apiVersion: v2
     appVersion: 4.8.1
+    created: "2022-03-14T01:01:23.078355444Z"
+    description: 'Adminer (formerly phpMinAdmin) is a full-featured database management
+      tool written in PHP.  Conversely to phpMyAdmin, it consist of a single file
+      ready to deploy to the target server.  Adminer is available for MySQL, PostgreSQL,
+      SQLite, MS SQL, Oracle, Firebird, SimpleDB, Elasticsearch and MongoDB. '
+    digest: 3eb99cd15e5e7b4b5bb41f408d8e874348ab7f0f501d6a647c6b68f27f79da7d
+    name: adminer
+    type: application
+    urls:
+    - https://github.com/InfraBuilder/helm-experimental/releases/download/adminer-0.0.2/adminer-0.0.2.tgz
+    version: 0.0.2
+  - apiVersion: v2
+    appVersion: 4.8.1
     created: "2022-03-13T19:16:44.89258859Z"
     description: 'Adminer (formerly phpMinAdmin) is a full-featured database management
       tool written in PHP.  Conversely to phpMyAdmin, it consist of a single file
