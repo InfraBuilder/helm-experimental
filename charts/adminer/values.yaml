@@ -53,7 +53,7 @@ adminer:
 
   # Space separated list of plugin to load
   # You can find the list of plugins on GitHub: https://github.com/vrana/adminer/tree/master/plugins
-  plugins: "designs "
+  plugins: ""
 
   # Choose default design
   # You can find the list of designs on GitHub: https://github.com/vrana/adminer/tree/master/designs

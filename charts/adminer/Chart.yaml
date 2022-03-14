@@ -5,5 +5,5 @@ description: |
   Conversely to phpMyAdmin, it consist of a single file ready to deploy to the target server. 
   Adminer is available for MySQL, PostgreSQL, SQLite, MS SQL, Oracle, Firebird, SimpleDB, Elasticsearch and MongoDB.
 type: application
-version: 0.0.1
+version: 0.0.2
 appVersion: "4.8.1"
