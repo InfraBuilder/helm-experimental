@@ -57,6 +57,19 @@ entries:
     urls:
     - https://github.com/InfraBuilder/helm-experimental/releases/download/easy-pvc-0.0.1/easy-pvc-0.0.1.tgz
     version: 0.0.1
+  maildev:
+  - apiVersion: v2
+    appVersion: v1.1.0
+    created: "2022-04-07T13:57:11.482896727Z"
+    description: 'MailDev is a simple way to test your project''s generated email
+      during development,  with an easy to use web interface that runs on your machine
+      built on top of Node.js. '
+    digest: d04a6fa1d22a5d0a785119f28a4fac1a6baf17b54bc67d99b7a3bb51b7690ba8
+    name: maildev
+    type: application
+    urls:
+    - https://github.com/InfraBuilder/helm-experimental/releases/download/maildev-0.0.1/maildev-0.0.1.tgz
+    version: 0.0.1
   mailhog:
   - apiVersion: v2
     appVersion: v1.0.1
