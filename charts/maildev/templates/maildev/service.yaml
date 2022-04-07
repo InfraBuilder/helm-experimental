@@ -1,0 +1,89 @@
+{{/* Service */}}
+{{- $currentName := "maildev" -}}
+
+{{- $currentValues := get .Values $currentName -}}
+{{- $currentService := get $currentValues "service" -}}
+{{- if $currentService.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $currentService.nameOverride | default (printf "%s-%s" (include "helper.fullname" $) $currentName) }}
+  labels:
+    {{- include "helper.labels" . | nindent 4 }}
+    {{- with .Values.commonLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+    app.kubernetes.io/component: {{ $currentName | quote }}
+  annotations: 
+    {{- with .Values.commonAnnotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+    {{- with $currentService.annotations }}
+    {{- toYaml . | nindent 4 -}}
+    {{- end }}
+spec:
+  type: {{ $currentService.type }}
+  {{- with $currentService.clusterIP }}
+  clusterIP: {{ . | quote }}
+  {{- end }}
+  {{- with $currentService.loadBalancerIP }}
+  loadBalancerIP: {{ . | quote }}
+  {{- end }}
+  ports:
+  {{- with $currentService.ports }}
+  {{- toYaml . | nindent 2 -}}
+  {{- end }}
+  {{- with $currentService.extraPorts }}
+  {{- toYaml . | nindent 2 -}}
+  {{- end }}
+  selector:
+    {{- include "helper.selectorLabels" . | nindent 4 }}
+    {{- with .Values.commonLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+    app.kubernetes.io/component: {{ $currentName | quote }}
+{{- end }}
+
+{{- $currentService := get $currentValues "smtpOnlyService" -}}
+{{- if $currentService.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $currentService.nameOverride | default (printf "%s-%s-smtp" (include "helper.fullname" $) $currentName) }}
+  labels:
+    {{- include "helper.labels" . | nindent 4 }}
+    {{- with .Values.commonLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+    app.kubernetes.io/component: {{ $currentName | quote }}
+  annotations: 
+    {{- with .Values.commonAnnotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+    {{- with $currentService.annotations }}
+    {{- toYaml . | nindent 4 -}}
+    {{- end }}
+spec:
+  type: {{ $currentService.type }}
+  {{- with $currentService.clusterIP }}
+  clusterIP: {{ . | quote }}
+  {{- end }}
+  {{- with $currentService.loadBalancerIP }}
+  loadBalancerIP: {{ . | quote }}
+  {{- end }}
+  ports:
+  {{- with $currentService.ports }}
+  {{- toYaml . | nindent 2 -}}
+  {{- end }}
+  {{- with $currentService.extraPorts }}
+  {{- toYaml . | nindent 2 -}}
+  {{- end }}
+  selector:
+    {{- include "helper.selectorLabels" . | nindent 4 }}
+    {{- with .Values.commonLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+    app.kubernetes.io/component: {{ $currentName | quote }}
+{{- end }}
+

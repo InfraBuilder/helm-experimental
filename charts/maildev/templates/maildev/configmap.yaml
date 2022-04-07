@@ -1,0 +1,37 @@
+{{- $currentName := "maildev" -}}
+
+{{- $currentValues := get .Values $currentName -}}
+{{- $currentConfig := get $currentValues "config" -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "helper.fullname" $ }}-{{ $currentName }}-env
+  labels:
+    {{- include "helper.labels" $ | nindent 4 }}
+    {{- with .Values.commonLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  annotations:
+    {{- with .Values.commonAnnotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+data:
+
+  MAILDEV_INCOMING_USER: {{ $currentConfig.smtp.user | quote }}
+  MAILDEV_OUTGOING_PASS: {{ $currentConfig.smtp.pass | quote }}
+  
+  MAILDEV_OUTGOING_HOST: {{ $currentConfig.relay.host | quote }}
+  MAILDEV_OUTGOING_PORT: {{ $currentConfig.relay.port | quote }}
+  MAILDEV_OUTGOING_USER: {{ $currentConfig.relay.user | quote }}
+  MAILDEV_OUTGOING_PASS: {{ $currentConfig.relay.pass | quote }}
+  MAILDEV_OUTGOING_SECURE: {{ $currentConfig.relay.host | quote }}
+
+  # Maildir path (for maildir storage backend)
+  MAILDEV_MAIL_DIRECTORY: "/data"
+
+  # Interface and port for SMTP server to bind to
+  MAILDEV_SMTP_PORT: "1025"
+  # Interface and port for HTTP server to bind to
+  MAILDEV_WEB_PORT: "1080"
+
+  

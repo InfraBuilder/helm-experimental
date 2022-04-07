@@ -1,0 +1,77 @@
+{{- $currentName := "maildev" -}}
+
+{{- $currentValues := get .Values $currentName -}}
+{{- $currentIngress := $currentValues.ingress -}}
+
+{{- if $currentIngress.enabled -}}
+{{- /* Add ingressClass as annotation if K8S < 1.18 */ -}}
+{{- if and $currentIngress.className (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
+  {{- if not (hasKey $currentIngress.annotations "kubernetes.io/ingress.class") }}
+  {{- $_ := set $currentIngress.annotations "kubernetes.io/ingress.class" .Values.ingress.className}}
+  {{- end }}
+{{- end }}
+
+{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: networking.k8s.io/v1
+{{- else if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: networking.k8s.io/v1beta1
+{{- else -}}
+apiVersion: extensions/v1beta1
+{{- end }}
+kind: Ingress
+metadata:
+  name: {{ include "helper.fullname" . }}-{{ $currentName }}
+  labels:
+    {{- include "helper.labels" . | nindent 4 }}
+    {{- with .Values.commonLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+    {{- with $currentValues.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+    app.kubernetes.io/component: {{ $currentName | quote }}
+  annotations:
+    {{- with .Values.commonAnnotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+    {{- with $currentValues.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+    {{- with $currentIngress.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  {{- if and $currentIngress.className (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
+  ingressClassName: {{ $currentIngress.className }}
+  {{- end }}
+  {{- if $currentIngress.tls }}
+  tls:
+    - hosts:
+        {{- toYaml $currentIngress.hosts |nindent 6}}
+      {{- with $currentIngress.secretName }}
+      secretName: {{ . | quote }}
+      {{- end }}
+  {{- end }}
+  rules:
+    {{- range $currentIngress.hosts }}
+    - host: {{ . | quote }}
+      http:
+        paths:
+          {{- range $currentIngress.paths }}
+          - path: {{ . | quote }}
+            {{- if semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion }}
+            pathType: {{ $currentIngress.pathType }}
+            {{- end }}
+            backend:
+              {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+              service:
+                name: {{ $currentValues.service.nameOverride | default (printf "%s-%s" (include "helper.fullname" $) $currentName) }}
+                port:
+                  name: http
+              {{- else }}
+              serviceName: {{ $currentValues.service.nameOverride | default (printf "%s-%s" (include "helper.fullname" $) $currentName) }}
+              servicePort: "http"
+              {{- end }}
+          {{- end }}
+    {{- end }}
+{{- end }}

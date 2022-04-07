@@ -1,0 +1,226 @@
+##============================================================================= 
+## Common Parameters
+##=============================================================================
+
+## String to partially override common.names.fullname template (will maintain the release name)
+nameOverride: ""
+
+## String to fully override common.names.fullname template with a string
+fullnameOverride: ""
+
+## Annotations to add to all deployed objects
+commonAnnotations: {}
+#   mycommonannotation: "global"
+
+## Labels to add to all deployed objects
+commonLabels: {}
+#   mycommonlabel: "global"
+
+##============================================================================= 
+## Extra ressource parameters
+##=============================================================================
+
+## Array of extra objects to deploy with the release (evaluated as a template).
+extraResources: []
+#- |
+#    apiVersion: v1
+#    kind: ConfigMap
+#    metadata:
+#      name: {{ include "helper.fullname" . }}
+#    data:
+#      test: "true"
+
+extraConfigMaps: {}
+#  # ConfigMap name
+#  main:
+#    # Data keys
+#    key: value
+#    key2: value2
+
+extraSecrets: {}
+#  # Secret name
+#  main:
+#    # Data keys
+#    key: value
+#    key2: value2
+
+##============================================================================= 
+## Ressource specific parameters
+##=============================================================================
+  
+#---{ Deployment backend }-----------------------
+maildev:
+  config:
+    http:
+      user: ""
+      pass: ""
+
+    smtp:
+      user: ""
+      pass: ""
+
+    # Relay section contains a smtp relay server
+    relay:
+      host: ""
+      port: ""
+      user: ""
+      pass: ""
+      secure: "false"
+
+  # Deployment extra labels
+  labels: {}
+  # Deployment extra annotations
+  annotations: {}
+
+  # Pod extra labels
+  podLabels: {}
+  # Pod extra annotations
+  podAnnotations: {}
+
+  # MailHog pod cannot be scaled more than one pod
+  # Instead of managing replicas, you can enable MailHog pod or not
+  # If enabled is set to false, it would mean 0 replicas
+  enabled: true
+
+  updateStrategy:
+    type: Recreate
+
+  # extra initContainers contains a list of Containers
+  # https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#Container
+  initContainers: []
+  # - name: myinit
+  #   image: busybox
+  #   args: ["date"]
+
+  hostAliases: []
+  # - ip: "127.0.0.1"
+  #   hostnames:
+  #   - "foo.local"
+  #   - "bar.local"
+
+  imagePullSecrets: []
+  # - name: secretName
+
+  # Container maildev
+  maildev:
+    image:
+      repository: "maildev/maildev"
+      tag: "1.1.0"
+      pullPolicy: IfNotPresent
+    command: []
+    args: []
+    tty: false
+    extraEnvVars: []
+    extraEnvFromVars: []
+    extraPorts: []
+    securityContext: {}
+      # capabilities:
+      #   drop:
+      #   - ALL
+      # readOnlyRootFilesystem: true
+      # runAsNonRoot: true
+      # runAsUser: 1000
+    livenessProbe: {}
+      # httpGet:
+      #   path: /
+      #   port: http
+    readinessProbe: {}
+      # httpGet:
+      #   path: /
+      #   port: http
+    resources: {} 
+      # limits:
+      #   cpu: 100m
+      #   memory: 128Mi
+      # requests:
+      #   cpu: 100m
+      #   memory: 128Mi  
+    extraVolumeMounts: []
+
+
+  # Sidecars are extra containers that will run in same pod
+  sidecars: []
+  podSecurityContext: {}
+    # fsGroup: 2000
+  schedulerName: ""
+  enableServiceLinks: false
+  runtimeClassName: ""
+  priorityClassName: ""
+  topologySpreadConstraints: []
+  nodeSelector: {}
+  # key: value
+  tolerations: []
+  # - key: "key1"
+  #   operator: "Equal"
+  #   value: "value1"
+  #   effect: "NoSchedule"
+  affinity: {}
+  extraVolumes: []
+  # - name: foo
+  #   emptyDir: {}
+
+  service:
+    enabled: true
+    nameOverride: ""
+    type: ClusterIP
+    clusterIP: ""
+    loadBalancerIP: ""
+    ports:
+    - name: http
+      port: 80
+      targetPort: http
+      protocol: TCP
+    - name: smtp
+      port: 25
+      targetPort: smtp
+      protocol: TCP
+    extraPorts: []
+
+  smtpOnlyService:
+    enabled: false
+    nameOverride: "smtp"
+    type: ClusterIP
+    clusterIP: ""
+    loadBalancerIP: ""
+    ports:
+    - name: smtp
+      port: 25
+      targetPort: smtp
+      protocol: TCP
+    extraPorts: []
+
+  ingress:
+    enabled: false
+    className: ""
+    annotations: {}
+      # kubernetes.io/ingress.class: nginx
+      # cert-manager.io/cluster-issuer: "letsencrypt"
+    hosts:
+    - example.com
+    paths: 
+    - /
+    pathType: Prefix
+    tls: false
+    secretName: ""
+
+  persistence:
+    # Enable persistence with PVC
+    enabled: true
+    existingClaim: ""
+    # If not using existingClaim, 
+    # will create PVC with following parameters
+    accessMode: ReadWriteOnce
+    size: 10Gi
+    storageClass: ""
+    # If resourcePolicyKeep is true, helm will not delete PVC on release uninstall
+    resourcePolicyKeep: true
+
+#---{ Common serviceAccount }--------------------
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
