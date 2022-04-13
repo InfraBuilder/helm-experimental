@@ -131,10 +131,10 @@ spec:
         {{- end }}
         ports:
         - name: smtp
-          containerPort: 1025
+          containerPort: 25
           protocol: TCP
         - name: http
-          containerPort: 1080
+          containerPort: 80
           protocol: TCP
         {{- with $currentContainerValues.ports }}
         {{- toYaml . | nindent 8 }}
