@@ -60,6 +60,18 @@ entries:
   maildev:
   - apiVersion: v2
     appVersion: v2.0.2
+    created: "2022-04-13T20:35:12.284174139Z"
+    description: 'MailDev is a simple way to test your project''s generated email
+      during development,  with an easy to use web interface that runs on your machine
+      built on top of Node.js. '
+    digest: 580d37a9552e4076e1f3483b59a8018177c10720d9d06ab11296b924a0cacdaf
+    name: maildev
+    type: application
+    urls:
+    - https://github.com/InfraBuilder/helm-experimental/releases/download/maildev-0.1.0/maildev-0.1.0.tgz
+    version: 0.1.0
+  - apiVersion: v2
+    appVersion: v2.0.2
     created: "2022-04-13T20:24:44.346008631Z"
     description: 'MailDev is a simple way to test your project''s generated email
       during development,  with an easy to use web interface that runs on your machine
