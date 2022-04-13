@@ -4,5 +4,5 @@ description: |
   MailDev is a simple way to test your project's generated email during development, 
   with an easy to use web interface that runs on your machine built on top of Node.js.
 type: application
-version: 0.0.3
+version: 0.1.0
 appVersion: "v2.0.2"

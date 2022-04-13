@@ -17,13 +17,13 @@ metadata:
     {{- end }}
 data:
 
+  MAILDEV_WEB_USER: {{ $currentConfig.http.user | quote }}
+
   MAILDEV_INCOMING_USER: {{ $currentConfig.smtp.user | quote }}
-  MAILDEV_OUTGOING_PASS: {{ $currentConfig.smtp.pass | quote }}
   
   MAILDEV_OUTGOING_HOST: {{ $currentConfig.relay.host | quote }}
   MAILDEV_OUTGOING_PORT: {{ $currentConfig.relay.port | quote }}
   MAILDEV_OUTGOING_USER: {{ $currentConfig.relay.user | quote }}
-  MAILDEV_OUTGOING_PASS: {{ $currentConfig.relay.pass | quote }}
   MAILDEV_OUTGOING_SECURE: {{ $currentConfig.relay.host | quote }}
 
   # Maildir path (for maildir storage backend)
