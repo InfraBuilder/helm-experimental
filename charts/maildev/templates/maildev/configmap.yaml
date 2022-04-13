@@ -24,7 +24,7 @@ data:
   MAILDEV_OUTGOING_HOST: {{ $currentConfig.relay.host | quote }}
   MAILDEV_OUTGOING_PORT: {{ $currentConfig.relay.port | quote }}
   MAILDEV_OUTGOING_USER: {{ $currentConfig.relay.user | quote }}
-  MAILDEV_OUTGOING_SECURE: {{ $currentConfig.relay.host | quote }}
+  MAILDEV_OUTGOING_SECURE: {{ $currentConfig.relay.secure | quote }}
 
   # Maildir path (for maildir storage backend)
   MAILDEV_MAIL_DIRECTORY: "/data"
